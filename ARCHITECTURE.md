@@ -1,4 +1,4 @@
-# CollabBoard — Real-Time Collaborative Whiteboard
+# Colour — Real-Time Collaborative Whiteboard
 
 > A production-ready MVP architected to scale to millions of users.
 > **Stack:** React (Vite) · Node.js (Express) · Socket.IO (WebSockets) · MongoDB (+ GridFS) · Redis (scale-out adapter)

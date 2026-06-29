@@ -8,7 +8,14 @@ const strokeSchema = new mongoose.Schema(
     authorId: { type: String, required: true },
     type: {
       type: String,
-      enum: ['path', 'rect', 'ellipse', 'text', 'image', 'clear', 'erase'],
+      enum: [
+        // freehand brushes
+        'pen', 'path', 'marker', 'highlighter', 'calligraphy', 'spray', 'erase',
+        // shapes
+        'line', 'arrow', 'rect', 'ellipse', 'diamond', 'triangle', 'star', 'text',
+        // media + control
+        'image', 'clear',
+      ],
       required: true,
     },
     data: { type: mongoose.Schema.Types.Mixed, default: {} },

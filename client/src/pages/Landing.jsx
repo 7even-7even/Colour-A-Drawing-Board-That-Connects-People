@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { useStore } from '../store/useStore.js';
+import Logo from '../components/Logo.jsx';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -47,8 +48,7 @@ export default function Landing() {
     <div className="landing">
       <div className="landing-card">
         <div className="brand">
-          <span className="logo">✦</span>
-          <h1>CollabBoard</h1>
+          <div className="brand-mark"><Logo size={84} withWordmark /></div>
           <p>Real-time collaborative whiteboard. No signup — just a name and a code.</p>
         </div>
 
@@ -88,7 +88,7 @@ export default function Landing() {
 
         {err && <p className="error">{err}</p>}
       </div>
-      <footer className="landing-footer">Built to scale · React · Node · WebSockets · MongoDB</footer>
+      <footer className="landing-footer">Colour · Built to scale · React · Node · WebSockets · MongoDB</footer>
     </div>
   );
 }

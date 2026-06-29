@@ -1,4 +1,4 @@
-# CollabBoard — Real-Time Collaborative Whiteboard
+# Colour — Real-Time Collaborative Whiteboard
 
 A production-ready MVP: multiple users draw on a shared canvas in real time, chat, share files, create/join rooms with a code, and sessions persist. Built to scale horizontally to millions of users.
 
@@ -10,12 +10,18 @@ A production-ready MVP: multiple users draw on a shared canvas in real time, cha
 
 ## Features
 
-- 🎨 **Simultaneous drawing** — pen, eraser, shapes, text; optimistic local render + server-authoritative event log.
-- 💬 **Chat** — persisted per room, scrolls live to all participants.
+- 🎨 **Simultaneous drawing** — 6 brushes (pen, marker, highlighter, calligraphy, spray, eraser) + 8 shapes (line, arrow, rect, ellipse, diamond, triangle, star, text), opacity, fill, 12-swatch palette + custom color picker. Optimistic render + server-authoritative event log.
+- 💬 **Chat** — persisted per room, scrolls live to all participants; mobile slide-in drawer with unread badge.
 - 🚪 **Rooms** — create or join by a short human-friendly code (e.g. `BR-7F3K`). No signup.
 - 📎 **File sharing** — upload to GridFS, posted into chat; images render inline.
 - 💾 **Session saving** — every stroke/message persists; refresh or rejoin replays the full board.
 - 👥 **Live presence + cursors** — see who's online and where their cursor is.
+- 📂 **Sidebar** — hamburger menu with New Board, Past Boards (local history), Friends, Profile, Settings (incl. dark canvas).
+- 📱 **Fully responsive** — adapts from desktop to phone; toolbar reflows, chat becomes a drawer.
+
+> **Logo:** the `Colour` mark is an inline SVG in `client/src/components/Logo.jsx`. Drop your official artwork in there (or `client/public/logo.svg`) to replace it.
+
+> A static, fully-rendered UI mock lives at [`PREVIEW.html`](./PREVIEW.html) — open it in a browser to see the new design without running the stack.
 
 ---
 
