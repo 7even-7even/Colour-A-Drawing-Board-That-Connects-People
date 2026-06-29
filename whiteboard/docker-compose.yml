@@ -1,0 +1,44 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGO_URI: mongodb://mongo:27017/collabboard
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-please-change-me}
+      CLIENT_ORIGIN: "*"
+    depends_on:
+      - mongo
+      - redis
+    # Scale horizontally: docker compose up --scale server=3
+    expose:
+      - "4000"
+    ports:
+      - "4000:4000"
+
+  client:
+    build: ./client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "8080:80"
+
+volumes:
+  mongo_data:
