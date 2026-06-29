@@ -102,12 +102,23 @@ This guide deploys the app for **free** as a portfolio project using:
 
 Right now the backend accepts requests from anywhere (`*`). Restrict it to your real frontend:
 
-1. Railway → your server → **Variables** → change:
+1. Railway → your server → **Variables** → set:
    ```
    CLIENT_ORIGIN=https://colour.vercel.app
+   ALLOW_VERCEL_PREVIEWS=true
    ```
-   (Use your actual Vercel domain. You can list several, comma-separated.)
+   - `CLIENT_ORIGIN` = your **production** Vercel domain. You can list several,
+     comma-separated. Trailing slashes/spaces are auto-trimmed, so a stray `/` is fine.
+   - `ALLOW_VERCEL_PREVIEWS=true` also allows Vercel's **per-deployment preview URLs**
+     (e.g. `colour-cild3eot0-yourproject.vercel.app`). Without this, only the exact
+     production domain works and preview deploys hit CORS errors. Set it to `false`
+     once you're testing only the production domain.
 2. Railway redeploys automatically. Done.
+
+> **Why you saw the CORS error:** the failing request came from a Vercel *preview*
+> URL that wasn't in `CLIENT_ORIGIN`. Either add that exact URL, or set
+> `ALLOW_VERCEL_PREVIEWS=true`. Also make sure `VITE_API_URL` on Vercel has **no
+> trailing slash** (the app now strips it defensively, but keep it clean).
 
 ---
 

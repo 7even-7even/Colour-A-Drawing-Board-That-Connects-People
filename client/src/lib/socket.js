@@ -1,7 +1,8 @@
 import { io } from 'socket.io-client';
 
 // Same backend as the REST API. Empty string => same-origin (local dev proxy).
-const SERVER_URL = import.meta.env.VITE_API_URL || '/';
+// Trailing slashes stripped to avoid malformed socket URLs.
+const SERVER_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '') || '/';
 
 let socket = null;
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import { env } from './config/env.js';
+import { corsOptions } from './config/cors.js';
 import health from './routes/health.js';
 import rooms from './routes/rooms.js';
 import files from './routes/files.js';
@@ -11,12 +11,8 @@ export function createApp() {
   const app = express();
 
   app.use(helmet());
-  app.use(
-    cors({
-      origin: env.CLIENT_ORIGIN === '*' ? true : env.CLIENT_ORIGIN.split(','),
-      credentials: true,
-    })
-  );
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions)); // handle preflight for all routes
   app.use(express.json({ limit: '1mb' }));
 
   app.use('/api', health);

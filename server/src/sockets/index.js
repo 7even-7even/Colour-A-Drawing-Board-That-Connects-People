@@ -2,16 +2,14 @@ import { Server } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 import { env } from '../config/env.js';
+import { socketCorsOptions } from '../config/cors.js';
 import { verifyToken } from '../services/tokens.js';
 import { registerRoomHandlers } from './roomHandlers.js';
 import { logger } from '../utils/logger.js';
 
 export async function attachSockets(httpServer) {
   const io = new Server(httpServer, {
-    cors: {
-      origin: env.CLIENT_ORIGIN === '*' ? true : env.CLIENT_ORIGIN.split(','),
-      credentials: true,
-    },
+    cors: socketCorsOptions,
     maxHttpBufferSize: 2e6, // 2MB cap on socket payloads
   });
 

@@ -1,35 +1,46 @@
-import http from 'http';
-import { createApp } from './app.js';
-import { attachSockets } from './sockets/index.js';
-import { connectDB, closeDB } from './config/db.js';
-import { env } from './config/env.js';
-import { logger } from './utils/logger.js';
+import { Server } from 'socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { createClient } from 'redis';
+import { env } from '../config/env.js';
+import { socketCorsOptions } from '../config/cors.js';
+import { verifyToken } from '../services/tokens.js';
+import { registerRoomHandlers } from './roomHandlers.js';
+import { logger } from '../utils/logger.js';
 
-async function main() {
-  await connectDB();
-
-  const app = createApp();
-  const server = http.createServer(app);
-  await attachSockets(server);
-
-  server.listen(env.PORT, () => {
-    logger.info('server listening', { port: env.PORT, env: env.NODE_ENV });
+export async function attachSockets(httpServer) {
+  const io = new Server(httpServer, {
+    cors: socketCorsOptions,
+    maxHttpBufferSize: 2e6, // 2MB cap on socket payloads
   });
 
-  // Graceful shutdown
-  const shutdown = async (signal) => {
-    logger.info('shutting down', { signal });
-    server.close(async () => {
-      await closeDB();
-      process.exit(0);
-    });
-    setTimeout(() => process.exit(1), 10000).unref();
-  };
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
-  process.on('SIGINT', () => shutdown('SIGINT'));
-}
+  // Multi-node fan-out via Redis. Falls back to single-node if REDIS_URL unset.
+  if (env.REDIS_URL) {
+    try {
+      const pub = createClient({ url: env.REDIS_URL });
+      const sub = pub.duplicate();
+      await Promise.all([pub.connect(), sub.connect()]);
+      io.adapter(createAdapter(pub, sub));
+      logger.info('Socket.IO Redis adapter enabled');
+    } catch (e) {
+      logger.warn('Redis adapter failed, running single-node', { msg: e.message });
+    }
+  } else {
+    logger.info('Socket.IO single-node mode (no REDIS_URL)');
+  }
 
-main().catch((e) => {
-  logger.error('fatal startup error', { msg: e.message, stack: e.stack });
-  process.exit(1);
-});
+  // Auth handshake: token via auth payload or query.
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+    const user = token && verifyToken(token);
+    if (!user) return next(new Error('Unauthorized'));
+    socket.user = user;
+    next();
+  });
+
+  io.on('connection', (socket) => {
+    logger.info('socket connected', { userId: socket.user.userId });
+    registerRoomHandlers(io, socket);
+  });
+
+  return io;
+}
