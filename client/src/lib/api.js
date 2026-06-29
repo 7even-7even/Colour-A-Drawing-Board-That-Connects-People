@@ -1,4 +1,8 @@
-const BASE = '/api';
+// In production (Vercel), set VITE_API_URL to your Railway backend URL,
+// e.g. https://colour-server.up.railway.app
+// Locally it's empty -> Vite dev proxy handles /api.
+export const SERVER_URL = import.meta.env.VITE_API_URL || '';
+const BASE = `${SERVER_URL}/api`;
 
 function authHeaders() {
   const token = sessionStorage.getItem('cb_token');

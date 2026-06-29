@@ -1,11 +1,14 @@
 import { io } from 'socket.io-client';
 
+// Same backend as the REST API. Empty string => same-origin (local dev proxy).
+const SERVER_URL = import.meta.env.VITE_API_URL || '/';
+
 let socket = null;
 
 export function connectSocket() {
   const token = sessionStorage.getItem('cb_token');
   if (socket && socket.connected) return socket;
-  socket = io('/', {
+  socket = io(SERVER_URL, {
     auth: { token },
     transports: ['websocket', 'polling'],
     reconnection: true,
